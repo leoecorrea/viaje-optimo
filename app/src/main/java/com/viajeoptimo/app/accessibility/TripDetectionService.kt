@@ -33,6 +33,7 @@ class TripDetectionService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         val pkg = event.packageName?.toString() ?: return
+        Log.d("ViajeOptimo", "evento pkg=$pkg type=${event.eventType}")
         val parser = parsers.find { it.targetPackageName == pkg } ?: return
         val root = rootInActiveWindow ?: return
 
