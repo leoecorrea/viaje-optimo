@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Viaje Óptimo</string>
+    <string name="accessibility_service_label">Detección de viajes</string>
+    <string name="accessibility_service_description">Detecta ofertas de viaje en apps de rideshare para calcular rentabilidad en tiempo real. No lee mensajes ni datos personales.</string>
+</resources>
