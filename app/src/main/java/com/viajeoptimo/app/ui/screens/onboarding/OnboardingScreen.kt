@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.core.app.NotificationManagerCompat
 
 @Composable
 fun OnboardingScreen(onPermissionsGranted: () -> Unit) {
@@ -27,20 +28,22 @@ fun OnboardingScreen(onPermissionsGranted: () -> Unit) {
 
     var overlayGranted by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
     var accessibilityGranted by remember { mutableStateOf(isAccessibilityEnabled(context)) }
+    var notificationListenerGranted by remember { mutableStateOf(isNotificationListenerEnabled(context)) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 overlayGranted = Settings.canDrawOverlays(context)
                 accessibilityGranted = isAccessibilityEnabled(context)
+                notificationListenerGranted = isNotificationListenerEnabled(context)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    LaunchedEffect(overlayGranted, accessibilityGranted) {
-        if (overlayGranted && accessibilityGranted) onPermissionsGranted()
+    LaunchedEffect(overlayGranted, accessibilityGranted, notificationListenerGranted) {
+        if (overlayGranted && accessibilityGranted && notificationListenerGranted) onPermissionsGranted()
     }
 
     Column(
@@ -57,7 +60,7 @@ fun OnboardingScreen(onPermissionsGranted: () -> Unit) {
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Viaje Óptimo necesita dos permisos para funcionar. Ninguno accede a tus mensajes ni datos personales.",
+            text = "Viaje Óptimo necesita tres permisos para funcionar. Ninguno accede a tus mensajes ni datos personales.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -86,11 +89,20 @@ fun OnboardingScreen(onPermissionsGranted: () -> Unit) {
             }
         )
 
+        PermissionCard(
+            title = "Escucha de notificaciones",
+            description = "Detecta cuando Didi envía una oferta de viaje para capturar la pantalla automáticamente.",
+            granted = notificationListenerGranted,
+            onAction = {
+                context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+            }
+        )
+
         Spacer(Modifier.weight(1f))
 
-        if (!overlayGranted || !accessibilityGranted) {
+        if (!overlayGranted || !accessibilityGranted || !notificationListenerGranted) {
             Text(
-                text = "Otorgá los dos permisos para continuar",
+                text = "Otorgá los tres permisos para continuar",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -141,4 +153,8 @@ private fun isAccessibilityEnabled(context: android.content.Context): Boolean {
     val am = context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
     return am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
         .any { it.resolveInfo.serviceInfo.packageName == context.packageName }
+}
+
+private fun isNotificationListenerEnabled(context: android.content.Context): Boolean {
+    return NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
 }

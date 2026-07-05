@@ -25,7 +25,7 @@ private object Route {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(onRequestScreenCapture: () -> Unit = {}) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -61,7 +61,8 @@ fun AppNavigation() {
             MainScreen(
                 onStartSession = { navController.navigate(Route.SESSION_START) },
                 onEndSession = { navController.navigate(Route.SUMMARY) },
-                onSettings = { navController.navigate(Route.SETTINGS) }
+                onSettings = { navController.navigate(Route.SETTINGS) },
+                onRequestScreenCapture = onRequestScreenCapture
             )
         }
 
@@ -69,6 +70,7 @@ fun AppNavigation() {
             SessionStartScreen(
                 onSessionStarted = {
                     navController.popBackStack()
+                    onRequestScreenCapture()
                 }
             )
         }

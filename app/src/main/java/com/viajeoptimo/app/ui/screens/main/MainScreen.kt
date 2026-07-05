@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,10 +20,12 @@ fun MainScreen(
     onStartSession: () -> Unit,
     onEndSession: () -> Unit,
     onSettings: () -> Unit,
+    onRequestScreenCapture: () -> Unit = {},
     viewModel: MainViewModel = viewModel()
 ) {
     val session by viewModel.activeSession.collectAsState()
     val config by viewModel.vehicleConfig.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -54,6 +57,7 @@ fun MainScreen(
             } else {
                 ActiveSessionContent(
                     session = session!!,
+                    onManualCapture = { viewModel.requestManualCapture(context) },
                     onEndSession = onEndSession
                 )
             }
@@ -93,6 +97,7 @@ private fun NoSessionContent(hasConfig: Boolean, onStartSession: () -> Unit) {
 @Composable
 private fun ActiveSessionContent(
     session: com.viajeoptimo.app.domain.model.ActiveSession,
+    onManualCapture: () -> Unit,
     onEndSession: () -> Unit
 ) {
     val startTime = remember(session.startTimeMs) {
@@ -124,7 +129,14 @@ private fun ActiveSessionContent(
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
 
-    Spacer(Modifier.height(48.dp))
+    OutlinedButton(
+        onClick = onManualCapture,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Capturar oferta")
+    }
+
+    Spacer(Modifier.height(16.dp))
 
     OutlinedButton(
         onClick = onEndSession,
