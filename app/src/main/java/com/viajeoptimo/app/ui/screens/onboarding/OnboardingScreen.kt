@@ -1,8 +1,10 @@
 package com.viajeoptimo.app.ui.screens.onboarding
 
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -136,10 +138,7 @@ private fun PermissionCard(
 }
 
 private fun isAccessibilityEnabled(context: android.content.Context): Boolean {
-    val serviceName = "${context.packageName}/.accessibility.TripDetectionService"
-    val enabledServices = Settings.Secure.getString(
-        context.contentResolver,
-        Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-    ) ?: return false
-    return enabledServices.split(":").any { it.equals(serviceName, ignoreCase = true) }
+    val am = context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+    return am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+        .any { it.resolveInfo.serviceInfo.packageName == context.packageName }
 }
