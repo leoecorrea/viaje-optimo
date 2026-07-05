@@ -9,7 +9,7 @@ class DidiTripParser : TripOfferParser {
     // Para encontrarlo: abrir la app Didi conductor en el dispositivo y ejecutar en Android Studio:
     //   adb shell dumpsys window | grep -i "mCurrentFocus"
     // El resultado muestra algo como: mCurrentFocus=Window{... com.didi.xxx/...}
-    override val targetPackageName = "TODO_REPLACE_WITH_DIDI_PACKAGE_NAME"
+    override val targetPackageName = "com.didiglobal.driver"
 
     // PASO PENDIENTE: completar después de inspeccionar el árbol de accesibilidad con Layout Inspector.
     // Pasos para inspeccionar:
