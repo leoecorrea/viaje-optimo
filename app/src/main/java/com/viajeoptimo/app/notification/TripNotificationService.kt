@@ -3,6 +3,7 @@ package com.viajeoptimo.app.notification
 import android.content.Intent
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.util.Log
 import com.viajeoptimo.app.accessibility.TripEventBus
 import com.viajeoptimo.app.capture.ScreenCaptureService
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +20,9 @@ class TripNotificationService : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+        Log.d("ViajeOptimo", "notif recibida de: ${sbn.packageName}")
         if (sbn.packageName == DIDI_PACKAGE) {
+            Log.d("ViajeOptimo", "notif de Didi → disparando captura")
             val captureIntent = Intent(this, ScreenCaptureService::class.java).apply {
                 action = ScreenCaptureService.ACTION_CAPTURE
             }
