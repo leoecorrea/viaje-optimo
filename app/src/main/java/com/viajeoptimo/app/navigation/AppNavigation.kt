@@ -29,10 +29,19 @@ fun AppNavigation(onRequestScreenCapture: () -> Unit = {}) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
+    val dataStore = remember { (context.applicationContext as ViajeOptimoApp).dataStore }
+
     val startDestination = remember {
-        val dataStore = (context.applicationContext as ViajeOptimoApp).dataStore
         val hasConfig = runBlocking { dataStore.vehicleConfig.first() } != null
         if (hasConfig) Route.MAIN else Route.ONBOARDING
+    }
+
+    // Si el proceso se reinició con una sesión activa, reconectar MediaProjection
+    LaunchedEffect(Unit) {
+        if (startDestination == Route.MAIN) {
+            val hasSession = dataStore.activeSession.first() != null
+            if (hasSession) onRequestScreenCapture()
+        }
     }
 
     NavHost(navController = navController, startDestination = startDestination) {
