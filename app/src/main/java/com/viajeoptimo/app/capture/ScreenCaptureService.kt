@@ -67,7 +67,7 @@ class ScreenCaptureService : Service() {
             ACTION_CAPTURE -> handleCapture()
             ACTION_STOP -> stopSelf()
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun handleStart(intent: Intent) {
