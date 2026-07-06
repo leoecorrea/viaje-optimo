@@ -84,11 +84,25 @@ class ScreenCaptureService : Service() {
             return
         }
 
+        // Limpiar sesión anterior si la hay
+        virtualDisplay?.release()
+        imageReader?.close()
+        mediaProjection?.stop()
+        virtualDisplay = null
+        imageReader = null
+        mediaProjection = null
+
         val notification = buildNotification()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
-        } else {
-            startForeground(NOTIFICATION_ID, notification)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
+            } else {
+                startForeground(NOTIFICATION_ID, notification)
+            }
+        } catch (e: SecurityException) {
+            // Token de MediaProjection inválido (proceso reiniciado), parar limpio
+            stopSelf()
+            return
         }
 
         val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
