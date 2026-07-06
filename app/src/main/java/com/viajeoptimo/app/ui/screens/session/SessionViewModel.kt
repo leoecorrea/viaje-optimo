@@ -1,10 +1,12 @@
 package com.viajeoptimo.app.ui.screens.session
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.viajeoptimo.app.ViajeOptimoApp
 import com.viajeoptimo.app.domain.model.ActiveSession
+import com.viajeoptimo.app.session.SessionForegroundService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +28,10 @@ class SessionViewModel(app: Application) : AndroidViewModel(app) {
             dataStore.startSession(
                 ActiveSession(startTimeMs = System.currentTimeMillis(), fuelPricePerLiter = price)
             )
+            val serviceIntent = Intent(getApplication(), SessionForegroundService::class.java).apply {
+                action = SessionForegroundService.ACTION_START
+            }
+            getApplication<Application>().startForegroundService(serviceIntent)
             _started.emit(true)
         }
     }

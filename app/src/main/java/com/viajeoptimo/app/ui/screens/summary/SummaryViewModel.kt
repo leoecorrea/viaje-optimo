@@ -1,10 +1,12 @@
 package com.viajeoptimo.app.ui.screens.summary
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.viajeoptimo.app.ViajeOptimoApp
 import com.viajeoptimo.app.domain.model.SessionRecord
+import com.viajeoptimo.app.session.SessionForegroundService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,6 +85,10 @@ class SummaryViewModel(app: Application) : AndroidViewModel(app) {
             )
             dataStore.saveSessionRecord(record)
             dataStore.endSession()
+            val stopIntent = Intent(getApplication(), SessionForegroundService::class.java).apply {
+                action = SessionForegroundService.ACTION_STOP
+            }
+            getApplication<Application>().startService(stopIntent)
             _state.value = s.copy(saved = true)
         }
     }
