@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 
 class SessionForegroundService : Service() {
 
@@ -21,7 +20,6 @@ class SessionForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("ViajeOptimo", "SessionForegroundService.onStartCommand action=${intent?.action}")
         when (intent?.action) {
             ACTION_START -> {
                 createNotificationChannel()
@@ -34,12 +32,8 @@ class SessionForegroundService : Service() {
                 } else {
                     startForeground(NOTIFICATION_ID, buildNotification())
                 }
-                Log.d("ViajeOptimo", "SessionForegroundService iniciado como foreground")
             }
-            ACTION_STOP -> {
-                Log.d("ViajeOptimo", "SessionForegroundService detenido")
-                stopSelf()
-            }
+            ACTION_STOP -> stopSelf()
         }
         return START_STICKY
     }

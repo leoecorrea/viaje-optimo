@@ -2,7 +2,6 @@ package com.viajeoptimo.app.ui.screens.session
 
 import android.app.Application
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.viajeoptimo.app.ViajeOptimoApp
@@ -32,7 +31,6 @@ class SessionViewModel(app: Application) : AndroidViewModel(app) {
             val serviceIntent = Intent(getApplication(), SessionForegroundService::class.java).apply {
                 action = SessionForegroundService.ACTION_START
             }
-            Log.d("ViajeOptimo", "Iniciando SessionForegroundService...")
             getApplication<Application>().startForegroundService(serviceIntent)
             _started.emit(true)
         }
