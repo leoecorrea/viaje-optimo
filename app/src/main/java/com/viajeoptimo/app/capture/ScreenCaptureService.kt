@@ -17,6 +17,7 @@ import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import com.viajeoptimo.app.accessibility.TripEventBus
 import com.viajeoptimo.app.ocr.OcrTripParser
@@ -133,8 +134,11 @@ class ScreenCaptureService : Service() {
     private fun handleCapture() {
         scope.launch {
             delay(500L)
-            val bitmap = captureScreen() ?: return@launch
+            val bitmap = captureScreen()
+            Log.d("ViajeOptimo", "handleCapture: bitmap=${if (bitmap != null) "${bitmap.width}x${bitmap.height}" else "null"}")
+            if (bitmap == null) return@launch
             val offer = parser.parse(bitmap)
+            Log.d("ViajeOptimo", "handleCapture: offer=$offer")
             TripEventBus.emit(offer)
         }
     }

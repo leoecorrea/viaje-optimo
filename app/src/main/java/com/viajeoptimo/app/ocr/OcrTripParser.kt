@@ -1,6 +1,7 @@
 package com.viajeoptimo.app.ocr
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -24,6 +25,7 @@ class OcrTripParser {
     }
 
     private fun extractOffer(text: String): TripOffer? {
+        Log.d("ViajeOptimo", "OCR texto reconocido:\n$text")
         val income = Regex("""\$\s*(\d[\d.,]*)""").find(text)
             ?.groupValues?.get(1)?.replace(",", ".")?.toDoubleOrNull()
             ?: return null
